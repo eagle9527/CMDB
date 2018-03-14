@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+<!-- 登录用户角色 -->
+    {% block  role%}
+        {% if msg.role== 0 %}
+           超级管理员
+        {% else %} 
+            普通用户
+        {% endif %}
+    {% endblock%}
+
+<!-- 登录用户名 -->
+    {% block  username%}
+        {{msg.username}}
+    {% endblock%}
+
+<!--导航 -->
+    {% block  navigation%}
+       <a href="/idc">机房管理 </a>  
+{% endblock%}
+
+{% block content%}
+
+<!--机房信息列表 -->
+<a  id="addidc"class='btn btn-sm btn-primary'>添加机房</a>
+
+<table class="table table-striped table-bordered table-hover " id="idc_table">
+<thead>
+    <tr>
+        <th class="text-center">编号</th> 
+        <th class="text-center">机房名</th>
+        <th class="text-center">机房中文名</th>
+        <th class="text-center">地址</th>
+        <th class="text-center">联系人</th>
+        <th class="text-center">联系电话</th>
+        
+        <th class="text-center">操作</th>
+        
+    </tr>
+</thead>
+   <tbody>
+       {% for item in idc%}
+        <tr clas s="gradeX">
+                <td class="text-center">{{item.id}}</td>
+                <td class="text-center">{{item.name}}</td>
+                <td class="text-center">{{item.name_cn}}</td>
+                <td class="text-center">{{item.address}}</td>
+                <td class="text-center">{{item.adminer}}</td>
+                <td class="text-center">{{item.phone}}</td>
+                
+                <td class="text-center">
+                    <button data-id="{{item.id}}" class="btn btn-xs btn-info update">编辑</button>
+                    <button data-id="{{item.id}}" class="btn btn-xs btn-danger del ">删除</button>
+                </td>
+               
+         </tr>
+         {% endfor %}
+    
+</tbody>
+</table>
+
+<!--添加机房模态框-->
+<div class="modal fade"  id ="IdcModal">   
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">添加机房</h4> 
+      </div>
+      <div class="modal-body">
+        <p hidden id="uperrorMsg" class="text-danger" style="color:red"></p> <!-- for error msg-->
+            <form id="idcForm" class="form-horizontal nice-validator n-yellow" novalidate="novalidate">
+            <div class="form-group">
+			    <label for="name" class="col-sm-3 control-label  ">机房英文简写</label>
+			    <div class="col-sm-8">
+				<input id="name" name="name" placeholder="Name" type="text" class="form-control" aria-required="true">
+			     </div>
+			</div><!--机房英文名字-->
+            <div class="hr-line-dashed"></div>
+			
+            <div class="form-group">
+			    <label for="name_cn" class="col-sm-3 control-label">机房中文名</label>
+			    <div class="col-sm-8">
+				<input id="name_cn" name="name_cn" placeholder="Chinese name" type="text" class="form-control" aria-required="true">
+			    </div>
+			</div><!--机房中文名字-->
+            <div class="hr-line-dashed"></div>
+			
+            <div class="form-group">
+			    <label for="address" class="col-sm-3 control-label">地址</label>
+			    <div class="col-sm-8">
+				<input id="address" name="address" placeholder="Address" type="text" class="form-control" aria-required="true">
+			    </div>
+			</div><!--机房地址-->
+			
+            <div class="hr-line-dashed"></div>
+			
+			<div class="form-group">
+			    <label for="adminer" class="col-sm-3 control-label">联系人</label>
+			    <div class="col-sm-8">
+				<input id="adminer" name="adminer" placeholder="Adminer" type="text" class="form-control" aria-required="true">
+			    </div>
+			</div><!--机房联系人-->
+			
+            <div class="hr-line-dashed"></div>
+			
+			<div class="form-group">
+			    <label for="phone" class="col-sm-3 control-label">联系人电话</label>
+			    <div class="col-sm-8">
+				<input id="phone" name="phone" placeholder="Phone" type="text" class="form-control" aria-required="true" datatype='m' errormsg='请输入11位手机号码'>
+			    </div>
+			</div><!--机房联系人电话-->
+
+        <div class="hr-line-dashed"></div>
+        <div class="form-group">
+            <div class="modal-footer">
+                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="Idcbtn">确认</button>
+            </div>
+        </div> <!--button-->
+        </form> <!--form-->
+      </div> <!--modal-body-->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+
+<!--机房信息编辑模态框-->
+<div class="modal fade"  id ="updateIdcModal">   
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">编辑机房</h4> 
+      </div>
+      <div class="modal-body">
+        <p hidden id="uperrorMsg" class="text-danger" style="color:red"></p> <!-- for error msg-->
+            <form id="updateidcForm" class="form-horizontal nice-validator n-yellow" novalidate="novalidate">
+            <input type="hidden" id='updateid' name="id"> <!--update need id-->
+            <div class="form-group">
+			    <label for="name" class="col-sm-3 control-label  ">机房英文简写</label>
+			    <div class="col-sm-8">
+				<input id="updatename" name="name" placeholder="Name" type="text" class="form-control" aria-required="true">
+			     </div>
+			</div><!--机房英文名字-->
+            <div class="hr-line-dashed"></div>
+			
+            <div class="form-group">
+			    <label for="name_cn" class="col-sm-3 control-label">机房中文名</label>
+			    <div class="col-sm-8">
+				<input id="updatename_cn" name="name_cn" placeholder="Chinese name" type="text" class="form-control" aria-required="true">
+			    </div>
+			</div><!--机房中文名字-->
+            <div class="hr-line-dashed"></div>
+			
+            <div class="form-group">
+			    <label for="address" class="col-sm-3 control-label">地址</label>
+			    <div class="col-sm-8">
+				<input id="updateaddress" name="address" placeholder="Address" type="text" class="form-control" aria-required="true">
+			    </div>
+			</div><!--机房地址-->
+			
+            <div class="hr-line-dashed"></div>
+			
+			<div class="form-group">
+			    <label for="adminer" class="col-sm-3 control-label">联系人</label>
+			    <div class="col-sm-8">
+				<input id="updateadminer" name="adminer" placeholder="Adminer" type="text" class="form-control" aria-required="true">
+			    </div>
+			</div><!--机房联系人-->
+			
+            <div class="hr-line-dashed"></div>
+			
+			<div class="form-group">
+			    <label for="phone" class="col-sm-3 control-label">联系人电话</label>
+			    <div class="col-sm-8">
+				<input id="updatephone" name="phone" placeholder="Phone" type="text" class="form-control" aria-required="true" datatype='m' errormsg='请输入11位手机号码'>
+			    </div>
+			</div><!--机房联系人电话-->
+
+        <div class="hr-line-dashed"></div>
+        <div class="form-group">
+            <div class="modal-footer">
+                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button"  class="btn btn-primary" id="updateIdcbtn">确认</button>
+            </div>
+        </div> <!--button-->
+        </form> <!--form-->
+      </div> <!--modal-body-->
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<script>
+$('#idc_table').DataTable({
+    "bDestroy": true, 
+    "language": {
+         "lengthMenu": "每页 _MENU_ 条记录",
+        "zeroRecords": "没有找到记录",
+        "sInfo": "第 _PAGE_ 页 ( 总共 _PAGES_ 页 ),显示第 _START_ 至 _END_ 项(总共 _TOTAL_ 项)",
+        "infoEmpty": "无记录",
+        "infoFiltered": "(从 _MAX_ 条记录过滤)",
+        "sSearch": "搜索:",
+        "oPaginate": {
+        "sFirst": "首页",
+        "sPrevious": "上一页",
+        "sNext": "下一页",
+        "sLast": "末页"
+        }
+    },
+    "order": [[ 0,"asc" ]]
+})
+
+
+</script>
+<script src="/static/js/idc.js"></script>
+{% endblock%}
+   

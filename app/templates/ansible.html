@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+<!-- 登录用户角色 -->
+    {% block  role%}
+        {% if msg.role== 0 %}
+           超级管理员
+        {% else %} 
+            普通用户
+        {% endif %}
+    {% endblock%}
+
+<!-- 登录用户名 -->
+    {% block  username%}
+        {{msg.username}}
+    {% endblock%}
+
+<!--导航 -->
+    {% block  navigation%}
+       <a href="/ansible">命令编排 </a>  
+{% endblock%}
+
+{% block content%}
+ 
+<div>
+ <form  id="cmdform" class="form-inline">     <!--定义垂直表单样式-->
+ <div class="form-group"> <!--定义一组div-->
+       <label>目标主机</label>
+       <select id="pattern" name="pattern"  class="form-control" >
+         {% for item in server%}
+             <option value='{{item.hostname}}'>{{item.hostname}}</option>
+         {% endfor %}
+       </select>
+ </div>    <!---pattern end-->
+ 
+  <div class="form-group">
+   <label>模块</label>
+   <select id="module" name="module"  class="form-control" >
+   <option value='shell'>shell</option>
+   <option value='command'>command</option>
+   </select>
+  </div>     <!---module  end-->
+
+  <div class="form-group">
+    <label>命令</label>
+    <select id="cmd" name="cmd"  class="form-control" >
+    <option value='pwd'>pwd</option>
+    <option value='uptime'>uptime</option>
+    <option value='df -h'>df -h</option>
+    <option value='free -m'>free -m</option>
+    </select>
+  </div>     <!---cmd  end-->
+
+  <div class="form-group">
+       <label>并发</label>
+       <select id="forks" name="forks"  class="form-control" >
+       <option value='5'>5</option>
+       <option value='10'>10</option>
+       <option value='15'>15</option>
+       </select>
+    </div> <!--forks  end -->
+
+ <div class="form-group">
+     <button class="btn btn-primary btn-sm">执行命令</button>
+      <button type="button"  class="btn btn-primary" id="history">任务列表</button
+ </div><!--button end-->
+</form><!--form end-->
+</div>  
+
+<div class="row">
+    <pre id='display' style="color:#f8f8ff;background:#000000"><pre/>
+
+</div>
+<script>
+/* submit cmdform*/
+$('#cmdform').on('submit',function(){
+    var str = $('#cmdform').serialize()
+    var url = '/ansible?'+str
+    console.log(url)
+    $.post(url,function(data){
+        console.log(data)
+        data = data.substring(1,data.length - 1);
+       $('#display').html(data)
+    })
+    return false
+})   //submit end
+
+$("#history").click(function(){   
+    $.getJSON("/history",function(data){
+            console.log(data)
+            $('#display').html(data)
+        })
+         return false
+})
+</script>
+
+
+
+{% endblock%}

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+<!-- 登录用户角色 -->
+    {% block  role%}
+        {% if msg.role== 0 %}
+           超级管理员
+        {% else %} 
+            普通用户
+        {% endif %}
+    {% endblock%}
+
+<!-- 登录用户名 -->
+    {% block  username%}
+        {{msg.username}}
+    {% endblock%}
+
+<!--导航 -->
+    {% block  navigation%}
+       <a href="/monitor">内存监控 </a>  
+{% endblock%}
+
+{% block content%}
+
+                
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="mem" style="width: 800px;height:500px;"></div>
+
+<div id="cpu" style="width: 800px;height:500px;"></div>
+
+<script src='/static/pulgin/echarts/echarts.min.js'></script>
+<script>
+
+$.getJSON('/memdata',function(data){
+    console.log(data)
+    var myChart = echarts.init($('#mem')[0]);
+    var option = {
+    title: {
+        text: '服务器内存使用率',
+        subtext: '项目演练'
+    },
+    tooltip: {
+        trigger: 'axis'
+    },
+    legend: {
+        data:['内存使用率']
+    },
+    toolbox: {
+        show: true,
+        feature: {
+            dataZoom:{show:true},
+            dataView: {show:true,readOnly:true,title : '数据视图',lang : ['数据视图','关闭']},
+            magicType: {show:true,type: ['line', 'bar']},
+            restore: {show:true,title:'还原'},
+            saveAsImage: {show:true,title:"保存图片"}
+        } 
+    },
+    xAxis:  {
+        type: 'time',
+        boundaryGap: false,
+    },
+    yAxis: {
+        type: 'value',
+        axisLabel: { 
+          formatter : '{value} %' 
+        }
+    },
+    series: [
+        {
+            name:'内存使用率',
+            type:'line',
+            data:data.result,
+       },
+    ]
+};
+myChart.setOption(option)
+// 每5秒请求一次数据 
+setInterval(function(){
+    $.getJSON('/memdata',function(data){
+    console.log(data.data)
+         myChart.setOption({
+            series:[{
+                 data:data.data
+             }]
+         })
+    })
+},5000)   
+})
+</script>
+
+{% endblock%}

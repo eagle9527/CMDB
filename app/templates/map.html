@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+    {% block  role%}
+        {% if msg.role== 0 %}
+               超级管理员
+        {% else %} 
+               普通用户
+        {% endif %}
+   {% endblock%}
+   
+   {% block  username%}
+   {{msg.username}}
+   {% endblock%}
+     <!--导航 -->
+    {% block  navigation%}
+        <a href="/map">网站访问IP来源 </a>
+    {% endblock%}
+
+
+{% block content%}
+
+                
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="mem" style="width: 1000px;height:700px;"></div>
+
+
+
+
+    <br>
+
+
+
+<script src='/static/pulgin/echarts/echarts.min.js'></script>
+<script src='/static/pulgin/echarts/china.js'></script>
+<script>
+
+$.getJSON('/mapdata',function(mapdata){
+console.log(mapdata)
+var myChart = echarts.init($('#mem')[0]);
+var option = {
+    title: {
+        text: '网站访问来源',
+        subtext: '测试数据',
+        left: 'center'
+    },
+    tooltip: {
+        trigger: 'item'
+    },
+    legend: {
+        orient: 'vertical',
+        left: 'left',
+        data: ["国内网站访问分布"]
+    },
+    visualMap: {                      // 调节数据大小的组件
+        min: 0 ,
+        max: 5000,
+        left: 'left',
+        top: 'bottom',
+        text: ['高','低'],           // 文本，默认为数值文本
+        calculable: true
+    },
+    toolbox: {
+        show: true,
+        orient: 'horizontal', // horizontal水平（默认），vertical垂直
+        left: 'right',
+        feature: {
+            dataView: {readOnly: false},
+            restore: {},
+            saveAsImage: {}
+         }
+    },
+    series: [
+          {
+            name: '国内网站访问分布',
+            type: 'map',
+            mapType: 'china',
+            roam: false,
+            label: {
+                normal: {
+                    show: true
+                },
+                emphasis: {
+                    show: true
+                  }
+            },
+            data: mapdata.mapdata,
+        }, 
+    ] 
+ };   
+myChart.setOption(option)
+})   
+
+</script>
+
+{% endblock %}
