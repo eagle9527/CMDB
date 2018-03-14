@@ -1,9 +1,10 @@
 
 
-        功能:      
-		           * 用户管理
-				   * 资产管理
-				   * 工单系统
+        功能:  
+		
+	               * 用户管理
+	               * 资产管理
+	               * 工单系统
 	               * ansible第三方接口
 	               * Bind-DLZ DNS 管理  
 				      bind 方面的配置请参阅 https://github.com/1032231418/Bind-Web
